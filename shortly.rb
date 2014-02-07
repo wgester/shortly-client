@@ -38,19 +38,19 @@ ActiveRecord::Base.include_root_in_json = false
 # Define associations here if need be
 # http://guides.rubyonrails.org/association_basics.html
 class User < ActiveRecord::Base
-    def authenticate(password)
-        (Digest::SHA1.hexdigest "#{password}#{self.salt}") == self.password
-    end
+    # def authenticate(password)
+    #     (Digest::SHA1.hexdigest "#{password}#{self.salt}") == self.password
+    # end
 
-    has_many :links
+    # has_many :links
 
-    validates :user_name, presence: true
+    # validates :user_name, presence: true
 
-    before_save do |user|
-      randomstring = (0...8).map { (65 + rand(26)).chr }.join
-      user.salt = Digest::SHA1.hexdigest randomstring
-      user.password = Digest::SHA1.hexdigest ("#{user.password}#{user.salt}")
-    end
+    # before_save do |user|
+    #   randomstring = (0...8).map { (65 + rand(26)).chr }.join
+    #   user.salt = Digest::SHA1.hexdigest randomstring
+    #   user.password = Digest::SHA1.hexdigest ("#{user.password}#{user.salt}")
+    # end
 end
 
 class Link < ActiveRecord::Base
@@ -71,37 +71,37 @@ end
 # Routes
 ###########################################################
 
-before '/' do
-    halt redirect('/login') unless logged_in?
-end
+# before '/' do
+#     halt redirect('/login') unless logged_in?
+# end
 
 get '/' do
-    username = puts session['userinfo']
-    User.find_by user_name: username
-    erb :index
+    # username = puts session['userinfo']
+    # User.find_by user_name: username
+    erb :layout
 end
 
-get '/login' do
-    erb :login
-end
+# get '/login' do
+#     erb :login
+# end
 
 get '/newuser' do
     erb :newuser
 end
 
-post '/login' do
-    user = User.find_by_user_name params[:user_name]
-    if user.nil?
-        redirect '/newuser'
-    else
-        if user.authenticate(params[:password])
-            session['user_id'] = user.id
-            redirect '/'
-        else
-            redirect '/login'
-        end
-    end
-end
+# post '/login' do
+#     user = User.find_by_user_name params[:user_name]
+#     if user.nil?
+#         redirect '/newuser'
+#     else
+#         if user.authenticate(params[:password])
+#             session['user_id'] = user.id
+#             redirect '/'
+#         else
+#             redirect '/login'
+#         end
+#     end
+# end
 
 get '/links' do
     links = Link.order(":clicks_count DESC")
@@ -110,19 +110,19 @@ get '/links' do
     }.to_json
 end
 
-post '/newuser' do
-    username = params[:user_name]
-    founduser = User.find_by_user_name username
-    if founduser != nil
-        redirect '/login'
-    else
-        user = User.new(params);
-        user.save
-        puts 'user was created!'
-        session['user_id'] = user.id
-        redirect '/'
-    end
-end
+# post '/newuser' do
+#     username = params[:user_name]
+#     founduser = User.find_by_user_name username
+#     if founduser != nil
+#         redirect '/login'
+#     else
+#         user = User.new(params);
+#         user.save
+#         puts 'user was created!'
+#         session['user_id'] = user.id
+#         redirect '/'
+#     end
+# end
 
 post '/links' do
     session['userinfo']
@@ -145,10 +145,10 @@ end
 # Utility
 ###########################################################
 
-def logged_in?
-    puts session['user_id']
-    session['user_id'] != nil
-end
+# def logged_in?
+#     puts session['user_id']
+#     session['user_id'] != nil
+# end
 
 def read_url_head url
     head = ""

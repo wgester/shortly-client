@@ -1,22 +1,15 @@
-<html>
+<html ng-app='Shortly'>
 <head>
   <title>Shortly</title>
-  <script src="lib/jquery.js"></script>
-  <script src="lib/jquery.cookie.js"></script>
-  <script src="lib/underscore.js"></script>
-  <script src="lib/backbone.js"></script>
-  <script src="/client/app.js"></script>
-  <script src="/client/link.js"></script>
-  <script src="/client/links.js"></script>
-  <script src="/client/linkView.js"></script>
-  <script src="/client/linksView.js"></script>
-  <script src="/client/linkCreateView.js"></script>
-  <script src="/client/session.js"></script>
-  <script src ="/client/userCreateView.js"></script>
-  <script src="/client/user.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular-route.js"></script>
+  <script src="client/app.js"></script>
+
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-  <%= yield %>
+
+  <div ng-view=''>
+  
 </body>
 </html>
