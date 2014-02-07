@@ -1,4 +1,4 @@
-class AddClicks < ActiveRecord::Migration
+class CreateClicks < ActiveRecord::Migration
   def up
     create_table :clicks do |t|
         t.integer :link_id

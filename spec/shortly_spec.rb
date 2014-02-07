@@ -1,6 +1,6 @@
 # add files to load path
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "../"))
-require 'shortener'
+require 'shortly'
 require 'rack/test'
 
 set :environment, :test
@@ -21,22 +21,27 @@ describe "URL Shortener" do
 
   context "successful requests" do
     it "can shorten a link" do
-      post '/new', :url => 'www.nyt.com'
+      post '/links', {:url => 'http://www.nytimes.com'}.to_json
       last_response.status == 200
       last_response.body.should_not be_empty
     end
 
+    it "fetches the page title" do
+      post '/links', {:url => 'http://www.nytimes.com'}.to_json
+      Link.last.title.should_not be_empty
+    end
+
     context "for the same link" do
       before do
-        @url = 'www.google.com'
-        post '/new', :url => @url
+        @url = 'http://www.google.com'
+        post '/links', {:url => @url}.to_json
         last_response.body.should_not be_empty
         @short_link = last_response.body
       end
 
       it "returns the same short-url" do
         5.times do
-          post '/new', :url => @url
+          post '/links', {:url => @url}.to_json
           last_response.body.should == @short_link
         end
       end
@@ -44,7 +49,7 @@ describe "URL Shortener" do
       it "does not create extra database entries" do
         expect {
           5.times do
-            post '/new', :url => @url
+            post '/links', {:url => @url}.to_json
           end
         }.to_not change{ Link.count }
       end
@@ -52,28 +57,28 @@ describe "URL Shortener" do
 
     context "using short-urls" do
       before do
-        post '/new', :url => 'www.hackreactor.com'
-        @short_link = last_response.body
+        post '/links', {:url => 'http://www.hackreactor.com'}.to_json
+        @short_code = JSON.parse(last_response.body)['code']
       end
 
       it "redirects correctly" do
-        get '/' + @short_link.split('/')[1]
+        get '/' + @short_code
         last_response.should be_redirect
         follow_redirect!
         last_request.url.should == 'http://www.hackreactor.com/'
       end
 
-      xit "increments the visit count" do
+      it "increments the visit count" do
         expect {
-          get '/' + @short_link.split('/')[1]
+          get '/' + @short_code
           last_response.should be_redirect
           follow_redirect!
         }.to change{ Link.last.visits }
       end
 
-      xit "logs date and time" do
+      it "logs date and time" do
         expect {
-          get '/' + @short_link.split('/')[1]
+          get '/' + @short_code
           last_response.should be_redirect
           follow_redirect!
         }.to change{ Click.count }
@@ -85,6 +90,11 @@ describe "URL Shortener" do
   context "unsuccessful requests" do
     it "returns a 404 for a nonsense short-link" do
       get "/notacorrectlink"
+      last_response.status.should == 404
+    end
+
+    it "does not accepts non-absolute urls" do
+      post '/links', {:url => 'www.hackreactor.com'}.to_json
       last_response.status.should == 404
     end
   end
