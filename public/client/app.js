@@ -7,8 +7,8 @@ Shortly.config(function($routeProvider) {
 		templateUrl: 'template/index.html'
 	})
 	.when('/shorten', {
-		controller: '',
-		templateUrl: ''
+		controller: 'shortenController',
+		templateUrl: 'template/shorten.html'
 	})
 	.when('login', {
 		controller: '',
@@ -24,6 +24,31 @@ Shortly.config(function($routeProvider) {
 
 });
 
-Shortly.controller('linksController', function($scope) {
-	$scope.name = 'Joseph!'
+Shortly.controller('linksController', function($scope, $http) {
+	$scope.name = 'WIll',
+	$http({
+    method: 'GET',
+    url: '/links' 
+	}).success(function(data){
+    $scope.links = data;
+	}).error(function(data){
+		console.log(data);
+	});
+});
+
+Shortly.controller('shortenController', function($scope, $http){
+  $scope.url = {url:null};
+  $scope.post = function(){
+  	$http({
+  		method: 'POST',
+  		url: '/links',
+  		data: JSON.stringify($scope.url)
+  	})
+  	.then(function(data){
+  		console.log(data);
+  	})
+  	.catch(function(data){
+      console.log('err', data);
+  	});
+  }
 });

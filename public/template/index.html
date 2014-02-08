@@ -1,1 +1,17 @@
-<h1 ng-controller='linksController'>hello {{ name || "trying!" }}</h1>
+<h1 ng-controller='linksController'>Shortly</h1>
+
+
+Search: <input ng-model="searchText">
+<!-- <ul>
+    <li ng-repeat="link in links | filter:searchText">{{ link.url }}</li>
+</ul> -->
+
+<table id="linksTable">
+  <tr><th>Link</th><th>Url</th><th>Name</th><th>Visits</th></tr>
+  <tr ng-repeat="link in links | filter:searchText | orderBy:visits:reverse">
+    <td>{{link.code}}</td>
+    <td>{{link.url}}</td>
+    <td>{{link.title}}</td>
+    <td>{{link.visits}}</td>
+  </tr>
+</table>
